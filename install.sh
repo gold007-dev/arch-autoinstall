@@ -38,7 +38,7 @@ while ! [ -d "/usr/share/zoneinfo/$region" ]; do
 done
 first=1
 city="undefined"
-while ! [ -d "/usr/share/zoneinfo/$region/$city" ]; do
+while ! [ -f "/usr/share/zoneinfo/$region/$city" ]; do
     if [ $first -eq 0 ]; then
         echo "This city does not exist"
     fi
