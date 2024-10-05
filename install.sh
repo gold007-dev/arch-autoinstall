@@ -1,44 +1,112 @@
 #!/bin/bash
+
+#################################################################
+###### This script should be run after chrooting into /mnt ######
+#################################################################
+
+echo "Setting up keys again"
 loadkeys sg-latin1
 
-echo You are on a $(cat /sys/firmware/efi/fw_platform_size)-bit system
+echo "checking if you are still online"
 
-echo "create an efi partition (EFI format) (min. 1Gib)"
-echo "create a swap partition (swap format) (min. 4GiB)"
-echo "create a file system partition (Linux format) (Rest of diskspace (min. 32GiB))"
+online=$(ping -q -c1 google.com &>/dev/null && echo online || echo offline)
 
-echo "Press enter when you are ready to set up your partitions"
+if [[ $online == "offline" ]];then
+    echo "Please connect to the internet"
+    exit 69
+fi
+
+echo "Setting up local time"
+
+first=1
+region="undefined"
+while ![ -d "/usr/share/zoneinfo/$region" ]; do
+    if [ $first -eq 0 ]; then
+        echo "This region does not exist"
+    fi
+    echo "do you want to list all regions?"
+    echo "(y|yes|y|Yes|YES)"
+    read regionList
+    pattern="[^(y|Y)]"
+    if ! [[ $regionList =~ $pattern ]]; then
+        vim <(ls -lah /usr/share/zoneinfo)
+    fi
+    echo "What region are you in? (example: Europe)"
+    read region
+    first=0
+
+done
+first=1
+city="undefined"
+while ![ -d "/usr/share/zoneinfo/$region/$city" ]; do
+    if [ $first -eq 0 ]; then
+        echo "This city does not exist"
+    fi
+    echo "do you want to list all cities?"
+    echo "(y|yes|y|Yes|YES)"
+    read citylist
+    pattern="[^(y|Y)]"
+    if ! [[ $citylist =~ $pattern ]]; then
+        vim <(ls -lah /usr/share/zoneinfo/$region)
+    fi
+    echo "What city are you in? (example: Zurich)"
+    read city
+    first=0
+
+done
+
+ln -sf /usr/share/zoneinfo/$region/$city /etc/localtime
+
+echo "generationg /etc/adjtime"
+
+hwclock --systohc
+
+echo "we will now set up the locale. please uncomment the line for your locale"
+echo "we will later need the exact name of your selected locale. Please write it down"
+echo "a vim instance will open after your confirmation"
+echo "please press enter"
 read
 
-cfdisk
+vim /etc/locale.gen
 
-echo "What is your filesystem partition? example: /dev/sda1"
-read filesystem_partition
+echo "generating locale"
 
-mkfs.ext4 "$filesystem_partition"
+locale-gen
 
-echo "What is your swap partition? example: /dev/sda2"
-read swap_partition
+echo "what locale did you use?"
+echo "example: en_US.UTF-8"
+read locale
 
-mkswap "$swap_partition"
+echo "LANG=$locale">/etc/locale.conf
 
-echo "What is your efi partition? example: /dev/sda3"
-read efi_partition
+echo "what keymap are you using?"
+echo "example: sg-latin1"
+read keymap
 
-mkfs.fat -F 32 "$efi_partition"
+echo "KEYMAP=$keymap">>/etc/vconsole.conf
 
-echo "Sucessfully created filesystems (mkfs)"
+echo "what should the hostname be?"
+echo "example: arch"
+read hostname
 
-echo "Mounting filesystems"
+echo "$hostname">/etc/hostname
 
-mount "$filesystem_partition" /mnt
+echo "we will now set the root password"
 
-mount --mkdir "$efi_partition" /mnt/boot
+passwd
 
-swapon "$swap_partition"
+echo "do you want to use rEFInd as your boot manager?"
+echo "(y|yes|y|Yes|YES)"
+read rEFInd
+pattern="[^(y|Y)]"
+if ! [[ $refind =~ $pattern ]]; then
+    pacman -S refind
+fi
 
-echo "Partitions successfully mounted"
+refind-install
 
-echo "Proceeding with installation"
+echo "installation complete. Please exit and reboot."
 
-# https://wiki.archlinux.org/title/Installation_guide#Installation
+echo "Please remove the USB and boot into the newly installed arch system"
+
+exit 0
