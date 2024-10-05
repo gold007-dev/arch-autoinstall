@@ -20,7 +20,7 @@ echo "Setting up local time"
 
 first=1
 region="undefined"
-while ![ -d "/usr/share/zoneinfo/$region" ]; do
+while ! [ -d "/usr/share/zoneinfo/$region" ]; do
     if [ $first -eq 0 ]; then
         echo "This region does not exist"
     fi
@@ -38,7 +38,7 @@ while ![ -d "/usr/share/zoneinfo/$region" ]; do
 done
 first=1
 city="undefined"
-while ![ -d "/usr/share/zoneinfo/$region/$city" ]; do
+while ! [ -d "/usr/share/zoneinfo/$region/$city" ]; do
     if [ $first -eq 0 ]; then
         echo "This city does not exist"
     fi
