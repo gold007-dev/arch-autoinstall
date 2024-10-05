@@ -24,7 +24,7 @@ echo "(y|yes|y|Yes|YES)"
 
 read confirmation
 pattern="[^(y|Y)]"
-if [ $confirmation =~ $pattern ]; then
+if [[ $confirmation =~ $pattern ]]; then
     vim <(fdisk -l)
 fi
 
