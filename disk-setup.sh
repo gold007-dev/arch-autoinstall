@@ -3,7 +3,7 @@ loadkeys sg-latin1
 
 online=$(ping -q -c1 google.com &>/dev/null && echo online || echo offline)
 
-if [[ $online == "offline" ]];then
+if [[ $online == "offline" ]]; then
     echo "Please connect to the internet"
     exit 69
 fi
@@ -69,12 +69,15 @@ pacstrap -K /mnt base linux linux-firmware $packages
 
 echo "generating fstab"
 
-genfstab -U /mnt >> /mnt/etc/fstab
+genfstab -U /mnt >>/mnt/etc/fstab
 
 cp install.sh /mnt/install.sh
+cp rEFInd.sh /rEFInd.sh
 chmod 777 /mnt/install.sh
 
 echo "chrooting into /mnt"
 echo "Please run /install.sh"
-
+echo "$efi_partition" >mnt/partitions.tmp
+echo "$swap_partition" >>/mnt/partitions.tmp
+echo "$filesystem_partition" >>/mnt/partitions.tmp
 arch-chroot /mnt

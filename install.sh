@@ -100,10 +100,9 @@ echo "(y|yes|y|Yes|YES)"
 read rEFInd
 pattern="[^(y|Y)]"
 if ! [[ $refind =~ $pattern ]]; then
-    pacman -S refind
+    /refind.sh
 fi
 
-refind-install
 
 echo "installation complete. Please exit and reboot."
 
