@@ -3,9 +3,12 @@
 pacman -S refind
 refind-install
 
+
 efi_partition=$(head -n 1 /partitions.tmp)
 swap_partition=$(head -n 2 /partitions.tmp | tail -n 1)
 filesystem_partition=$(tail -n 1 /partitions.tmp)
+
+cp -r /usr/share/refind/icons /boot/EFI/refind/
 
 echo "EFI=$efi_partition"
 echo "SWAP=$swap_partition"

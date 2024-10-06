@@ -1,5 +1,4 @@
 #!/bin/bash
-loadkeys sg-latin1
 
 online=$(ping -q -c1 google.com &>/dev/null && echo online || echo offline)
 

@@ -5,7 +5,6 @@
 #################################################################
 
 echo "Setting up keys again"
-loadkeys sg-latin1
 
 echo "checking if you are still online"
 
