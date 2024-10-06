@@ -71,12 +71,12 @@ echo "generating fstab"
 genfstab -U /mnt >>/mnt/etc/fstab
 
 cp install.sh /mnt/install.sh
-cp rEFInd.sh /rEFInd.sh
+cp rEFInd.sh /mnt/rEFInd.sh
 chmod 777 /mnt/install.sh
 
 echo "chrooting into /mnt"
 echo "Please run /install.sh"
-echo "$efi_partition" >mnt/partitions.tmp
+echo "$efi_partition" >/mnt/partitions.tmp
 echo "$swap_partition" >>/mnt/partitions.tmp
 echo "$filesystem_partition" >>/mnt/partitions.tmp
 arch-chroot /mnt
