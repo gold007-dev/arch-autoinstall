@@ -26,19 +26,18 @@ pattern="[^(y|Y)]"
 if [[ $confirmation =~ $pattern ]]; then
     vim <(fdisk -l)
 fi
+echo "What is your efi partition? example: /dev/sda1"
+read efi_partition
 
-echo "What is your filesystem partition? example: /dev/sda1"
+echo "What is your filesystem partition? example: /dev/sda3"
 read filesystem_partition
-
-mkfs.ext4 "$filesystem_partition"
 
 echo "What is your swap partition? example: /dev/sda2"
 read swap_partition
 
-mkswap "$swap_partition"
+mkfs.ext4 "$filesystem_partition"
 
-echo "What is your efi partition? example: /dev/sda3"
-read efi_partition
+mkswap "$swap_partition"
 
 mkfs.fat -F 32 "$efi_partition"
 

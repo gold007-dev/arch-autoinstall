@@ -73,7 +73,7 @@ echo "generating locale"
 locale-gen
 
 echo "what locale did you use?"
-echo "example: en_US.UTF-8"
+echo "example: en_SG.UTF-8"
 read locale
 
 echo "LANG=$locale">/etc/locale.conf
