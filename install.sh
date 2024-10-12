@@ -99,7 +99,7 @@ echo "(y|yes|y|Yes|YES)"
 read rEFInd
 pattern="[^(y|Y)]"
 if ! [[ $refind =~ $pattern ]]; then
-    /refind.sh
+    /rEFInd.sh
 fi
 
 
