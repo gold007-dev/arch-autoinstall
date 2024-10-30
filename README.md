@@ -4,7 +4,7 @@
 
 1. install git
     ```bash
-    pacman -Syu git
+    pacman -Sy git
     ```
 2. clone this repository
     ```bash
