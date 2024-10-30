@@ -9,6 +9,10 @@ fi
 
 echo You are on a $(cat /sys/firmware/efi/fw_platform_size)-bit system
 
+echo "on which drive do you want your system to be? (example: (/dev/sda)"
+
+read targetDisk
+
 echo "create an efi partition (EFI format) (min. 1Gib)"
 echo "create a swap partition (swap format) (min. 4GiB)"
 echo "create a file system partition (Linux format) (Rest of diskspace (min. 32GiB))"
@@ -16,7 +20,7 @@ echo "create a file system partition (Linux format) (Rest of diskspace (min. 32G
 echo "Press enter when you are ready to set up your partitions"
 read
 
-cfdisk
+cfdisk $targetDisk
 
 echo "do you know where your partitions are? (example: /dev/sda1, /dev/sda2, /dev/sda3)"
 echo "(y|yes|y|Yes|YES)"
