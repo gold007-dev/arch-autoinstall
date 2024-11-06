@@ -6,6 +6,9 @@
 
 echo "Setting up keys again"
 
+pacman-key --init
+pacman-key --populate archlinux
+
 echo "checking if you are still online"
 
 online=$(ping -q -c1 google.com &>/dev/null && echo online || echo offline)
@@ -24,7 +27,7 @@ while ! [ -d "/usr/share/zoneinfo/$region" ]; do
         echo "This region does not exist"
     fi
     echo "do you want to list all regions?"
-    echo "(y|yes|y|Yes|YES)"
+    echo "[Y/n]"
     read regionList
     pattern="[^(y|Y)]"
     if ! [[ $regionList =~ $pattern ]]; then
@@ -42,7 +45,7 @@ while ! [ -f "/usr/share/zoneinfo/$region/$city" ]; do
         echo "This city does not exist"
     fi
     echo "do you want to list all cities?"
-    echo "(y|yes|y|Yes|YES)"
+    echo "[Y/n]"
     read citylist
     pattern="[^(y|Y)]"
     if ! [[ $citylist =~ $pattern ]]; then
@@ -95,7 +98,7 @@ echo "we will now set the root password"
 passwd
 
 echo "do you want to use rEFInd as your boot manager?"
-echo "(y|yes|y|Yes|YES)"
+echo "[Y/n]"
 read rEFInd
 pattern="[^(y|Y)]"
 if ! [[ $refind =~ $pattern ]]; then
