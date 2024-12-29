@@ -3,7 +3,6 @@
 pacman -S refind
 refind-install
 
-
 efi_partition=$(head -n 1 /partitions.tmp)
 swap_partition=$(head -n 2 /partitions.tmp | tail -n 1)
 filesystem_partition=$(tail -n 1 /partitions.tmp)
@@ -29,3 +28,4 @@ echo "menuentry "Arch Linux" {
 		add_options "systemd.unit=multi-user.target"
 	}
 }" >>/boot/EFI/refind/refind.conf
+efibootmgr --create --disk $(echo "$efi_partition" | sed "s/[0-9]$//") --part $(echo "$efi_partition" | grep -o "[0-9]*$") --loader /EFI/refind/refind_x64.efi --label "rEFInd Boot Manager" --unicode
