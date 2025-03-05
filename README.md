@@ -2,6 +2,8 @@
 
 ## Installation steps
 
+### Without encryption
+
 1. install git
     ```bash
     pacman -Sy git
@@ -15,3 +17,7 @@
     cd arch-autoinstall
     ./disk-setup.sh
     ```
+
+### With encryption
+
+> Not implemented yet.
