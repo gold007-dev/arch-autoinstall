@@ -38,7 +38,7 @@ echo "What is your filesystem partition? example: /dev/sda2"
 read filesystem_partition
 
 cryptsetup luksFormat --type luks2 $filesystem_partition
-cryptsetup open --perf-no_read_workqueue --perf-no_write_workqueue --persistent $filesystem_partition cryplvm
+cryptsetup open --perf-no_read_workqueue --perf-no_write_workqueue --persistent $filesystem_partition cryptlvm
 
 pvcreate /dev/mapper/cryptlvm
 vgcreate vg /dev/mapper/cryptlvm
