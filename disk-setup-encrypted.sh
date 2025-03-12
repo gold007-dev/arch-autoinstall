@@ -82,4 +82,14 @@ echo "chrooting into /mnt"
 echo "Please run /install.sh"
 echo "$efi_partition" >/mnt/partitions.tmp
 echo "$filesystem_partition" >>/mnt/partitions.tmp
+
+EUUID=$(lsblk -no UUID $filesystem_partition)
+UUUID=$(lsblk -no UUID /dev/vg/root)
+
+cat << EOF > /mnt/boot/refind.conf
+"Boot with standard options"  "root=UUID=$UUUID ro cryptdevice=UUID=$EUUID:root:allow-discards quiet"
+"Boot to single-user mode"    "root=UUID=$UUUID ro cryptdevice=UUID=$EUUID:root:allow-discards quiet single"
+"Boot with minimal options"   "root=UUID=$UUUID ro cryptdevice=UUID=$EUUID:root:allow-discards"
+EOF
+
 arch-chroot /mnt
