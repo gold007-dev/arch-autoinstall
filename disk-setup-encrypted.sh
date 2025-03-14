@@ -40,11 +40,7 @@ read filesystem_partition
 cryptsetup luksFormat --type luks2 $filesystem_partition
 cryptsetup open --perf-no_read_workqueue --perf-no_write_workqueue --persistent $filesystem_partition cryptlvm
 
-pvcreate /dev/mapper/cryptlvm
-vgcreate vg /dev/mapper/cryptlvm
-lvcreate -l 100%FREE vg -n root
-
-mkfs.ext4 /dev/vg/root
+mkfs.ext4 /dev/mapper/cryptlvm
 
 mkfs.fat -F 32 "$efi_partition"
 
