@@ -102,6 +102,7 @@ echo "[Y/n]"
 read rEFInd
 pattern="[^(y|Y)]"
 if ! [[ $refind =~ $pattern ]]; then
+    sed -i '/^HOOKS/s/\(block \)\(.*filesystems\)/\1encrypt lvm2 \2/' /etc/mkinitcpio.conf
     /rEFInd.sh
 fi
 
