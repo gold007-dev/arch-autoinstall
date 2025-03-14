@@ -83,13 +83,13 @@ echo "Please run /install.sh"
 echo "$efi_partition" >/mnt/partitions.tmp
 echo "$filesystem_partition" >>/mnt/partitions.tmp
 
-EUUID=$(lsblk -no UUID $filesystem_partition)
-UUUID=$(lsblk -no UUID /dev/vg/root)
+LUKS_UUID=$(lsblk -no UUID $filesystem_partition)
+BOOT_OPTIONS="cryptdevice=UUID=${LUKS_UUID}:cryptlvm root=/dev/vg/root"
 
 cat << EOF > /mnt/boot/refind.conf
-"Boot with standard options"  "root=UUID=$UUUID ro cryptdevice=UUID=$EUUID:root:allow-discards quiet"
-"Boot to single-user mode"    "root=UUID=$UUUID ro cryptdevice=UUID=$EUUID:root:allow-discards quiet single"
-"Boot with minimal options"   "root=UUID=$UUUID ro cryptdevice=UUID=$EUUID:root:allow-discards"
+"Boot with standard options"  "${BOOT_OPTIONS} rw loglevel=3"
+"Boot to single-user mode"    "${BOOT_OPTIONS} rw loglevel=3 single"
+"Boot with minimal options"   "ro ${BOOT_OPTIONS}"
 EOF
 
 arch-chroot /mnt
