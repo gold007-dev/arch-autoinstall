@@ -84,12 +84,13 @@ echo "$efi_partition" >/mnt/partitions.tmp
 echo "$filesystem_partition" >>/mnt/partitions.tmp
 
 LUKS_UUID=$(blkid -s UUID -o value $filesystem_partition)
+DECR_UUID=$(blkid -s UUID -o value /dev/vg/root)
 BOOT_OPTIONS="cryptdevice=UUID=${LUKS_UUID}:cryptlvm root=/dev/vg/root"
+BOOT_OPTIONS="rd.luks.uuid=luks-${LUKS_UUID} rd.lvm.lv=vg/root root=/dev/mapper/vg-root rootfstype=ext4 rootflags=rw,relatime"
 
 cat << EOF > /mnt/boot/refind_linux.conf
-"Boot with standard options"  "${BOOT_OPTIONS} rw loglevel=3"
-"Boot to single-user mode"    "${BOOT_OPTIONS} rw loglevel=3 single"
-"Boot with minimal options"   "ro ${BOOT_OPTIONS}"
+"Boot with standard options"  "${BOOT_OPTIONS} loglevel=3"
+"Boot to single-user mode"    "${BOOT_OPTIONS} loglevel=3"
 EOF
 
 arch-chroot /mnt
