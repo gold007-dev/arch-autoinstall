@@ -40,7 +40,11 @@ read filesystem_partition
 cryptsetup luksFormat --type luks2 $filesystem_partition
 cryptsetup open --perf-no_read_workqueue --perf-no_write_workqueue --persistent $filesystem_partition cryptlvm
 
-mkfs.ext4 /dev/mapper/cryptlvm
+pvcreate /dev/mapper/cryptlvm
+vgcreate vg /dev/mapper/cryptlvm
+lvcreate -l 100%FREE vg -n root
+
+mkfs.ext4 /dev/vg/root
 
 mkfs.fat -F 32 "$efi_partition"
 
@@ -81,7 +85,7 @@ echo "$filesystem_partition" >>/mnt/partitions.tmp
 
 LUKS_UUID=$(blkid -s UUID -o value $filesystem_partition)
 DECR_UUID=$(blkid -s UUID -o value /dev/vg/root)
-BOOT_OPTIONS="cryptdevice=UUID=${LUKS_UUID}:cryptlvm root=/dev/mapper/cryptlvm"
+BOOT_OPTIONS="cryptdevice=UUID=${LUKS_UUID}:cryptlvm root=/dev/vg/root"
 
 cat << EOF > /mnt/boot/refind_linux.conf
 "Boot with standard options"  "${BOOT_OPTIONS} loglevel=3 rw"
