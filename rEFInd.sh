@@ -1,26 +1,33 @@
 #!/bin/bash
 
+sed -i '/^HOOKS/s/\(block \)\(.*filesystems\)/\1encrypt lvm2 \2/' /etc/mkinitcpio.conf
 pacman -S refind
 refind-install
 
 efi_partition=$(head -n 1 /partitions.tmp)
-swap_partition=$(head -n 2 /partitions.tmp | tail -n 1)
 filesystem_partition=$(tail -n 1 /partitions.tmp)
 
 cp -r /usr/share/refind/icons /boot/EFI/refind/
 
 echo "EFI=$efi_partition"
-echo "SWAP=$swap_partition"
 echo "FS=$filesystem_partition"
 
 # lsblk -no UUID /dev/sda1
+
+LUKS_UUID=$(blkid -s UUID -o value $filesystem_partition)
+BOOT_OPTIONS="cryptdevice=UUID=${LUKS_UUID}:${MAPPER_NAME} root=/dev/${VG_NAME}/root"
+
+cat << EOF > /mnt/boot/refind_linux.conf
+"Boot with standard options"  "${BOOT_OPTIONS} loglevel=3 rw"
+"Boot to single-user mode"    "${BOOT_OPTIONS} loglevel=3 rw single"
+EOF
 
 echo "menuentry "Arch Linux" {
 	icon     /EFI/refind/icons/os_arch.png
 	volume   "Arch Linux"
 	loader   /vmlinuz-linux
 	initrd   /initramfs-linux.img
-	options  \"root=$filesystem_partition rw add_efi_memmap\"
+	options  \"${BOOT_OPTIONS} loglevel=3 rw\"
 	submenuentry "Boot using fallback initramfs" {
 		initrd /initramfs-linux-fallback.img
 	}

@@ -99,12 +99,4 @@ echo "Please run /install.sh"
 echo "$efi_partition" >/mnt/partitions.tmp
 echo "$filesystem_partition" >>/mnt/partitions.tmp
 
-LUKS_UUID=$(blkid -s UUID -o value $filesystem_partition)
-BOOT_OPTIONS="cryptdevice=UUID=${LUKS_UUID}:${MAPPER_NAME} root=/dev/${VG_NAME}/root"
-
-cat << EOF > /mnt/boot/refind_linux.conf
-"Boot with standard options"  "${BOOT_OPTIONS} loglevel=3 rw"
-"Boot to single-user mode"    "${BOOT_OPTIONS} loglevel=3 rw single"
-EOF
-
 arch-chroot /mnt
