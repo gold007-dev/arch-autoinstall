@@ -2,6 +2,8 @@
 
 sed -i '/^HOOKS/s/\(block \)\(.*filesystems\)/\1encrypt lvm2 \2/' /etc/mkinitcpio.conf
 
+efi_partition=$(head -n 1 /partitions.tmp)
+filesystem_partition=$(tail -n 1 /partitions.tmp)
 echo "EFI=$efi_partition"
 echo "FS=$filesystem_partition"
 
@@ -19,9 +21,6 @@ EOF
 
 pacman -S refind
 refind-install
-
-efi_partition=$(head -n 1 /partitions.tmp)
-filesystem_partition=$(tail -n 1 /partitions.tmp)
 
 cp -r /usr/share/refind/icons /boot/EFI/refind/
 
