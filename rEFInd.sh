@@ -38,3 +38,4 @@ echo "menuentry "Arch Linux" {
 	}
 }" >>/boot/EFI/refind/refind.conf
 efibootmgr --create --disk $(echo "$efi_partition" | sed "s/[0-9]$//") --part $(echo "$efi_partition" | grep -o "[0-9]*$") --loader /EFI/refind/refind_x64.efi --label "rEFInd Boot Manager" --unicode
+mkinitcpio -p linux
