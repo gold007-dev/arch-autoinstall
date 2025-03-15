@@ -15,8 +15,8 @@ echo "on which drive do you want your system to be? (example: (/dev/sda)"
 read targetDisk
 
 echo "create an efi partition (EFI format) (min. 1Gib)"
-echo "we will not create a swap partition, we will create a swapfile on the encrypted partition later"
-echo "create a file system partition (encrypted LUKS (with \`gdisk\` it's partition code 8309)) (Rest of diskspace (min. 32GiB))"
+echo "you don't create the swappartition now, we will make one in the encrypted lvm later"
+echo "create a file system partition (Linux Filesystem) (Rest of diskspace (min. 32GiB))"
 
 echo "Press enter when you are ready to set up your partitions"
 read
