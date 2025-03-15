@@ -1,13 +1,6 @@
 #!/bin/bash
 
 sed -i '/^HOOKS/s/\(block \)\(.*filesystems\)/\1encrypt lvm2 \2/' /etc/mkinitcpio.conf
-pacman -S refind
-refind-install
-
-efi_partition=$(head -n 1 /partitions.tmp)
-filesystem_partition=$(tail -n 1 /partitions.tmp)
-
-cp -r /usr/share/refind/icons /boot/EFI/refind/
 
 echo "EFI=$efi_partition"
 echo "FS=$filesystem_partition"
@@ -23,6 +16,14 @@ cat << EOF > /mnt/boot/refind_linux.conf
 "Boot with standard options"  "${BOOT_OPTIONS} loglevel=3 rw"
 "Boot to single-user mode"    "${BOOT_OPTIONS} loglevel=3 rw single"
 EOF
+
+pacman -S refind
+refind-install
+
+efi_partition=$(head -n 1 /partitions.tmp)
+filesystem_partition=$(tail -n 1 /partitions.tmp)
+
+cp -r /usr/share/refind/icons /boot/EFI/refind/
 
 echo "menuentry "Arch Linux" {
 	icon     /EFI/refind/icons/os_arch.png
