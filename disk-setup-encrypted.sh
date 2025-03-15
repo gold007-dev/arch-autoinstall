@@ -37,14 +37,28 @@ read efi_partition
 echo "What is your filesystem partition? example: /dev/sda2"
 read filesystem_partition
 
+MAPPER_NAME="ArchCryptLVM"
+VG_NAME="ArchVolumeGroup"
+
 cryptsetup luksFormat --type luks2 $filesystem_partition
-cryptsetup open --perf-no_read_workqueue --perf-no_write_workqueue --persistent $filesystem_partition cryptlvm
+cryptsetup open --perf-no_read_workqueue --perf-no_write_workqueue --persistent $filesystem_partition $MAPPER_NAME
 
-pvcreate /dev/mapper/cryptlvm
-vgcreate vg /dev/mapper/cryptlvm
-lvcreate -l 100%FREE vg -n root
+pvcreate /dev/mapper/$MAPPER_NAME
+vgcreate $VG_NAME /dev/mapper/$MAPPER_NAME
 
-mkfs.ext4 /dev/vg/root
+echo "Do you wan't a virtual swap partition? [Y/n]"
+read swapq
+pattern="[^(y|Y)]"
+if [[ $swapq =~ $pattern ]]; then
+    echo "How many gigabytes of swap do you want? example: 4"
+    read swapg
+    lvcreate -l ${swapg}G $VG_NAME -n swap
+    mkswap /dev/$VG_NAME/swap
+fi
+
+lvcreate -l 100%FREE $VG_NAME -n root
+
+mkfs.ext4 /dev/$VG_NAME/root
 
 mkfs.fat -F 32 "$efi_partition"
 
@@ -52,9 +66,11 @@ echo "Sucessfully created filesystems (mkfs)"
 
 echo "Mounting filesystems"
 
-mount /dev/vg/root /mnt
+mount /dev/$VG_NAME/root /mnt
 
 mount --mkdir "$efi_partition" /mnt/boot
+
+swapon /dev/$VG_NAME/swap
 
 echo "Partitions successfully mounted"
 
@@ -84,8 +100,7 @@ echo "$efi_partition" >/mnt/partitions.tmp
 echo "$filesystem_partition" >>/mnt/partitions.tmp
 
 LUKS_UUID=$(blkid -s UUID -o value $filesystem_partition)
-DECR_UUID=$(blkid -s UUID -o value /dev/vg/root)
-BOOT_OPTIONS="cryptdevice=UUID=${LUKS_UUID}:cryptlvm root=/dev/vg/root"
+BOOT_OPTIONS="cryptdevice=UUID=${LUKS_UUID}:${MAPPER_NAME} root=/dev/${VG_NAME}/root"
 
 cat << EOF > /mnt/boot/refind_linux.conf
 "Boot with standard options"  "${BOOT_OPTIONS} loglevel=3 rw"
