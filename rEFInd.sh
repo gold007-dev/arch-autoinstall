@@ -14,6 +14,8 @@ echo "FS=$filesystem_partition"
 
 # lsblk -no UUID /dev/sda1
 
+MAPPER_NAME="ArchCryptLVM"
+VG_NAME="ArchVolumeGroup"
 LUKS_UUID=$(blkid -s UUID -o value $filesystem_partition)
 BOOT_OPTIONS="cryptdevice=UUID=${LUKS_UUID}:${MAPPER_NAME} root=/dev/${VG_NAME}/root"
 
