@@ -68,7 +68,7 @@ echo "What packages do you want to install?"
 echo "example: vim neovim nano man-db tree fastfetch intel-ucode man-pages"
 read packages
 
-pacstrap -K /mnt base linux linux-firmware $packages
+pacstrap -K /mnt base linux linux-firmware lvm2 $packages
 
 echo "generating fstab"
 
