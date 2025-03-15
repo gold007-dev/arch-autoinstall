@@ -48,7 +48,7 @@ vgcreate $VG_NAME /dev/mapper/$MAPPER_NAME
 
 echo "Do you wan't a virtual swap partition? [Y/n]"
 read swapq
-pattern="[^(y|Y)]"
+pattern="[(y|Y)]"
 if [[ $swapq =~ $pattern ]]; then
     echo "How many gigabytes of swap do you want? example: 4"
     read swapg
