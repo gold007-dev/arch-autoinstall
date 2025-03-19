@@ -41,7 +41,6 @@ if [[ $encrypted == "YES" ]]; then
 			add_options "systemd.unit=multi-user.target"
 		}
 	}" >>/boot/EFI/refind/refind.conf
-	efibootmgr --create --disk $(echo "$efi_partition" | sed "s/[0-9]$//") --part $(echo "$efi_partition" | grep -o "[0-9]*$") --loader /EFI/refind/refind_x64.efi --label "rEFInd Boot Manager" --unicode
 	mkinitcpio -p linux
 else
 	pacman -S refind
@@ -72,5 +71,6 @@ else
 			add_options "systemd.unit=multi-user.target"
 		}
 	}" >>/boot/EFI/refind/refind.conf
-	efibootmgr --create --disk $(echo "$efi_partition" | sed "s/[0-9]$//") --part $(echo "$efi_partition" | grep -o "[0-9]*$") --loader /EFI/refind/refind_x64.efi --label "rEFInd Boot Manager" --unicode
 fi
+
+efibootmgr --create --disk $(echo "$efi_partition" | sed "s/[0-9]$//") --part $(echo "$efi_partition" | grep -o "[0-9]*$") --loader /EFI/refind/refind_x64.efi --label "rEFInd Boot Manager" --unicode
