@@ -82,4 +82,5 @@ echo "Please run /install.sh"
 echo "$efi_partition" >/mnt/partitions.tmp
 echo "$swap_partition" >>/mnt/partitions.tmp
 echo "$filesystem_partition" >>/mnt/partitions.tmp
+echo "NO" > /mnt/encrypted.tmp
 arch-chroot /mnt

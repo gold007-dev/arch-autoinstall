@@ -31,5 +31,5 @@
 3. run disk-setup.sh
     ```bash
     cd arch-autoinstall
-    ./disk-setup.sh
+    ./disk-setup-encrypted.sh
     ```

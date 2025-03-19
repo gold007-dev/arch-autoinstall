@@ -98,5 +98,6 @@ echo "chrooting into /mnt"
 echo "Please run /install.sh"
 echo "$efi_partition" >/mnt/partitions.tmp
 echo "$filesystem_partition" >>/mnt/partitions.tmp
+echo "YES" > /mnt/encrypted.tmp
 
 arch-chroot /mnt
