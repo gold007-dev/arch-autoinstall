@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 online=$(ping -q -c1 google.com &>/dev/null && echo online || echo offline)
@@ -52,7 +51,7 @@ pattern="[(y|Y)]"
 if [[ $swapq =~ $pattern ]]; then
     echo "How many gigabytes of swap do you want? example: 4"
     read swapg
-    lvcreate -l ${swapg}G $VG_NAME -n swap
+    lvcreate -L ${swapg}G $VG_NAME -n swap
     mkswap /dev/$VG_NAME/swap
 fi
 
