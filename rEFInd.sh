@@ -1,6 +1,7 @@
 #!/bin/bash
 
 encrypted=$(head -n 1 /encrypted.tmp)
+pacman -S refind
 
 if [[ $encrypted == "YES" ]]; then
 
@@ -23,7 +24,6 @@ if [[ $encrypted == "YES" ]]; then
 	"Boot to single-user mode"    "${BOOT_OPTIONS} loglevel=3 rw single"
 	EOF
 
-	pacman -S refind
 	refind-install
 
 	cp -r /usr/share/refind/icons /boot/EFI/refind/
@@ -43,7 +43,6 @@ if [[ $encrypted == "YES" ]]; then
 	}" >>/boot/EFI/refind/refind.conf
 	mkinitcpio -p linux
 else
-	pacman -S refind
 	refind-install
 
 	efi_partition=$(head -n 1 /partitions.tmp)
