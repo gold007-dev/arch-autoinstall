@@ -14,15 +14,15 @@ echo "on which drive do you want your system to be? (example: (/dev/sda)"
 read targetDisk
 
 echo "create an efi partition (EFI format) (min. 1Gib)"
-echo "create a swap partition (swap format) (min. 4GiB)"
-echo "create a file system partition (Linux format) (Rest of diskspace (min. 32GiB))"
+echo "you don't create the swappartition now, we will make one in the encrypted lvm later"
+echo "create a file system partition (Linux Filesystem) (Rest of diskspace (min. 32GiB))"
 
 echo "Press enter when you are ready to set up your partitions"
 read
 
 cfdisk $targetDisk
 
-echo "do you know where your partitions are? (example: /dev/sda1, /dev/sda2, /dev/sda3)"
+echo "do you know where your partitions are? (example: /dev/sda1, /dev/sda2)"
 echo "(y|yes|y|Yes|YES)"
 
 read confirmation
@@ -33,15 +33,31 @@ fi
 echo "What is your efi partition? example: /dev/sda1"
 read efi_partition
 
-echo "What is your swap partition? example: /dev/sda2"
-read swap_partition
-
-echo "What is your filesystem partition? example: /dev/sda3"
+echo "What is your filesystem partition? example: /dev/sda2"
 read filesystem_partition
 
-mkfs.ext4 "$filesystem_partition"
+MAPPER_NAME="ArchCryptLVM"
+VG_NAME="ArchVolumeGroup"
 
-mkswap "$swap_partition"
+cryptsetup luksFormat --type luks2 $filesystem_partition
+cryptsetup open --perf-no_read_workqueue --perf-no_write_workqueue --persistent $filesystem_partition $MAPPER_NAME
+
+pvcreate /dev/mapper/$MAPPER_NAME
+vgcreate $VG_NAME /dev/mapper/$MAPPER_NAME
+
+echo "Do you wan't a virtual swap partition? [Y/n]"
+read swapq
+pattern="[(y|Y)]"
+if [[ $swapq =~ $pattern ]]; then
+    echo "How many gigabytes of swap do you want? example: 4"
+    read swapg
+    lvcreate -L ${swapg}G $VG_NAME -n swap
+    mkswap /dev/$VG_NAME/swap
+fi
+
+lvcreate -l 100%FREE $VG_NAME -n root
+
+mkfs.ext4 /dev/$VG_NAME/root
 
 mkfs.fat -F 32 "$efi_partition"
 
@@ -49,11 +65,11 @@ echo "Sucessfully created filesystems (mkfs)"
 
 echo "Mounting filesystems"
 
-mount "$filesystem_partition" /mnt
+mount /dev/$VG_NAME/root /mnt
 
 mount --mkdir "$efi_partition" /mnt/boot
 
-swapon "$swap_partition"
+swapon /dev/$VG_NAME/swap
 
 echo "Partitions successfully mounted"
 
@@ -67,7 +83,7 @@ echo "What packages do you want to install?"
 echo "example: vim neovim nano man-db tree fastfetch intel-ucode man-pages"
 read packages
 
-pacstrap -K /mnt base linux linux-firmware $packages
+pacstrap -K /mnt base linux linux-firmware lvm2 $packages
 
 echo "generating fstab"
 
@@ -80,7 +96,7 @@ chmod 777 /mnt/install.sh
 echo "chrooting into /mnt"
 echo "Please run /install.sh"
 echo "$efi_partition" >/mnt/partitions.tmp
-echo "$swap_partition" >>/mnt/partitions.tmp
 echo "$filesystem_partition" >>/mnt/partitions.tmp
-echo "NO" > /mnt/encrypted.tmp
+echo "YES" > /mnt/encrypted.tmp
+
 arch-chroot /mnt
