@@ -22,7 +22,7 @@ if [[ $encrypted == "YES" ]]; then
 	cat << EOF > /boot/refind_linux.conf
 	"Boot with standard options"  "${BOOT_OPTIONS} loglevel=3 rw"
 	"Boot to single-user mode"    "${BOOT_OPTIONS} loglevel=3 rw single"
-	EOF
+EOF
 
 	refind-install
 
